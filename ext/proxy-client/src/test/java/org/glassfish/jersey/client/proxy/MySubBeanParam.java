@@ -4,6 +4,9 @@ import jakarta.ws.rs.QueryParam;
 
 import java.util.List;
 
+/**
+ * @author Richard Obersheimer
+ */
 public class MySubBeanParam {
 
     public List<String> getSubQueryParam() {

@@ -1,6 +1,5 @@
 package org.glassfish.jersey.client.proxy;
 
-import jakarta.ws.rs.InternalServerErrorException;
 import jakarta.ws.rs.core.Cookie;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -8,13 +7,13 @@ import org.glassfish.jersey.test.TestProperties;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
 
+/**
+ * @author Richard Obersheimer
+ */
 public class WebResourceFactoryBeanParamTest  extends JerseyTest {
 
     private MyResourceWithBeanParamIfc resourceWithBeanParam;
@@ -109,6 +108,16 @@ public class WebResourceFactoryBeanParamTest  extends JerseyTest {
 
         assertEquals("HEADER=header,PATH=path,FORM=form1,form2,QUERY=query,MATRIX=3,COOKIE=value1,SUB=2"
                 + ",Q2=q2", response);
+    }
+
+    @Test
+    public void testSubResource() {
+        MyGetBeanParam myGetBeanParam = new MyGetBeanParam();
+        myGetBeanParam.setQueryParam("query");
+
+        String response = resourceWithBeanParam.getSubResource().echoQuery(myGetBeanParam);
+
+        assertEquals("query", response);
     }
 
 }

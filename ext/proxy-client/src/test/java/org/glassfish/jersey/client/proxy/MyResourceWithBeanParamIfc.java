@@ -2,18 +2,14 @@ package org.glassfish.jersey.client.proxy;
 
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Cookie;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 
+/**
+ * @author Richard Obersheimer
+ */
 @Path("mybeanresource")
 public interface MyResourceWithBeanParamIfc {
 
@@ -52,5 +48,8 @@ public interface MyResourceWithBeanParamIfc {
     @Path("all/{pathParam}")
     @Produces("text/plain")
     public String echo(@BeanParam MyBeanParam bean);
+
+    @Path("subresource")
+    MyResourceWithBeanParamIfc getSubResource();
 
 }

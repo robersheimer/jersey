@@ -2,7 +2,6 @@ package org.glassfish.jersey.client.proxy;
 
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.CookieParam;
-import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.MatrixParam;
 import jakarta.ws.rs.PathParam;
@@ -11,6 +10,9 @@ import jakarta.ws.rs.core.Cookie;
 
 import java.util.List;
 
+/**
+ * @author Richard Obersheimer
+ */
 public class MyGetBeanParam {
 
     @HeaderParam("headerParam")

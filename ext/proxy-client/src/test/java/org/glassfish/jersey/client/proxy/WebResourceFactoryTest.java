@@ -335,5 +335,4 @@ public class WebResourceFactoryTest extends JerseyTest {
     public void testEquals() {
         assertFalse("The two resource instances should not be considered equals as they are unique", resource.equals(resource2));
     }
-
 }

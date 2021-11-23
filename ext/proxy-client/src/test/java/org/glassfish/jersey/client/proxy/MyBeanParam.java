@@ -1,27 +1,15 @@
 package org.glassfish.jersey.client.proxy;
 
-import jakarta.ws.rs.BeanParam;
-import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.MatrixParam;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Cookie;
 
 import java.util.List;
-import java.util.Set;
 
-public class MyBeanParam {
-
-    @HeaderParam("headerParam")
-    String headerParam;
-
-    @PathParam("pathParam")
-    String pathParam;
-
-    @QueryParam("queryParam")
-    String queryParam;
+/**
+ * @author Richard Obersheimer
+ */
+public class MyBeanParam extends MyGetBeanParam {
 
     @FormParam("formParam1")
     String formParam1;
@@ -29,17 +17,7 @@ public class MyBeanParam {
     @FormParam("formParam2")
     String formParam2;
 
-    @MatrixParam("matrixParam")
-    List<String> matrixParam;
-
-    @CookieParam("cookieParam")
-    Cookie cookieParam;
-
-    @BeanParam
-    MySubBeanParam subBeanParam;
-
     String queryParam2;
-
 
     public MyBeanParam(String headerParam, String pathParam, String queryParam, String formParam1, String formParam2,
                        List<String> matrixParam, Cookie cookieParam, MySubBeanParam subBeanParam) {
@@ -55,30 +33,6 @@ public class MyBeanParam {
 
     public MyBeanParam() {}
 
-    public String getHeaderParam() {
-        return headerParam;
-    }
-
-    public void setHeaderParam(String headerParam) {
-        this.headerParam = headerParam;
-    }
-
-    public String getPathParam() {
-        return pathParam;
-    }
-
-    public void setPathParam(String pathParam) {
-        this.pathParam = pathParam;
-    }
-
-    public String getQueryParam() {
-        return queryParam;
-    }
-
-    public void setQueryParam(String queryParam) {
-        this.queryParam = queryParam;
-    }
-
     public String getFormParam1() {
         return formParam1;
     }
@@ -93,30 +47,6 @@ public class MyBeanParam {
 
     public void setFormParam2(String formParam2) {
         this.formParam2 = formParam2;
-    }
-
-    public List<String> getMatrixParam() {
-        return matrixParam;
-    }
-
-    public void setMatrixParam(List<String> matrixParam) {
-        this.matrixParam = matrixParam;
-    }
-
-    public Cookie getCookieParam() {
-        return cookieParam;
-    }
-
-    public void setCookieParam(Cookie cookieParam) {
-        this.cookieParam = cookieParam;
-    }
-
-    public MySubBeanParam getSubBeanParam() {
-        return subBeanParam;
-    }
-
-    public void setSubBeanParam(MySubBeanParam subBeanParam) {
-        this.subBeanParam = subBeanParam;
     }
 
     @QueryParam("queryParam2")

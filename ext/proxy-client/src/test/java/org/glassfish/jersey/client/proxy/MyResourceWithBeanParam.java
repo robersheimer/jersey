@@ -1,16 +1,10 @@
 package org.glassfish.jersey.client.proxy;
 
 import jakarta.ws.rs.BeanParam;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Cookie;
-import jakarta.ws.rs.core.Response;
 
+/**
+ * @author Richard Obersheimer
+ */
 public class MyResourceWithBeanParam implements MyResourceWithBeanParamIfc {
 
     @Override
@@ -50,5 +44,10 @@ public class MyResourceWithBeanParam implements MyResourceWithBeanParamIfc {
                 + ",MATRIX=" + bean.getMatrixParam().size() + ",COOKIE=" + bean.getCookieParam().getValue()
                 + ",SUB=" + bean.getSubBeanParam().getSubQueryParam().size()
                 + ",Q2=" + bean.getQueryParam2());
+    }
+
+    @Override
+    public MyResourceWithBeanParamIfc getSubResource() {
+        return new MyResourceWithBeanParam();
     }
 }
