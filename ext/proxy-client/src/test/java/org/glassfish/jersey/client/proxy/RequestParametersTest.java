@@ -207,7 +207,8 @@ public class RequestParametersTest {
     }
 
     @Test
-    public void testListOfFormParameters() throws NoSuchFieldException, IntrospectionException, InvocationTargetException, IllegalAccessException {
+    public void testListOfFormParameters() throws NoSuchFieldException, IntrospectionException,
+            InvocationTargetException, IllegalAccessException {
 
         WebTarget webTarget = getExampleTarget();
         RequestParameters requestParameters = getEmptyRequestParameters(webTarget);
@@ -251,7 +252,8 @@ public class RequestParametersTest {
     }
 
     @Test
-    public void testAddListOfBeanParameters() throws NoSuchFieldException, IntrospectionException, InvocationTargetException, IllegalAccessException {
+    public void testAddListOfBeanParameters() throws NoSuchFieldException, IntrospectionException,
+            InvocationTargetException, IllegalAccessException {
 
         WebTarget webTarget = getExampleTarget();
         RequestParameters requestParameters = getEmptyRequestParameters(webTarget);
