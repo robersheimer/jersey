@@ -27,20 +27,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class RequestParameters {
+/**
+ * Collector to retrieve parameters for setting up the HTTP request sent in the invoke method of WebResourceFactory
+ * The addParameter method takes a single annotated method parameter or annotated field or property of a BeanParam
+ * and adds the information to the web target, headers, cookie list or form. It calls addBeanParameter for every
+ * BeanParam it encounters, which in turn calls addParameter as often as needed
+ */
+class RequestParameters {
 
     private WebTarget newTarget;
-    private MultivaluedHashMap<String, Object> headers;
-    private LinkedList<Cookie> cookies;
-    private Form form;
+    private final MultivaluedHashMap<String, Object> headers;
+    private final LinkedList<Cookie> cookies;
+    private final Form form;
 
-    private static final List<Class> PARAM_ANNOTATION_CLASSES = Arrays.<Class>asList(PathParam.class, QueryParam.class,
+    private static final List<Class<?>> PARAM_ANNOTATION_CLASSES = Arrays.asList(PathParam.class, QueryParam.class,
             HeaderParam.class, CookieParam.class, MatrixParam.class, FormParam.class, BeanParam.class);
 
-    public RequestParameters(final WebTarget newTarget, final MultivaluedMap<String, Object> headers,
+    RequestParameters(final WebTarget newTarget, final MultivaluedMap<String, Object> headers,
                              final List<Cookie> cookies, final Form form) {
 
-        this.headers = new MultivaluedHashMap<String, Object>(headers);
+        this.headers = new MultivaluedHashMap<>(headers);
         this.cookies = new LinkedList<>(cookies);
         this.form = new Form();
         this.form.asMap().putAll(form.asMap());
@@ -48,7 +54,7 @@ public class RequestParameters {
         this.newTarget = newTarget;
     }
 
-    public void addParameter(final Object value, final Map<Class, Annotation> anns)
+    void addParameter(final Object value, final Map<Class<?>, Annotation> anns)
             throws IntrospectionException, InvocationTargetException, IllegalAccessException {
 
             Annotation ann;
@@ -56,13 +62,13 @@ public class RequestParameters {
                 newTarget = newTarget.resolveTemplate(((PathParam) ann).value(), value);
             } else if ((ann = anns.get((QueryParam.class))) != null) {
                 if (value instanceof Collection) {
-                    newTarget = newTarget.queryParam(((QueryParam) ann).value(), convert((Collection) value));
+                    newTarget = newTarget.queryParam(((QueryParam) ann).value(), convert((Collection<?>) value));
                 } else {
                     newTarget = newTarget.queryParam(((QueryParam) ann).value(), value);
                 }
             } else if ((ann = anns.get((HeaderParam.class))) != null) {
                 if (value instanceof Collection) {
-                    headers.addAll(((HeaderParam) ann).value(), convert((Collection) value));
+                    headers.addAll(((HeaderParam) ann).value(), convert((Collection<?>) value));
                 } else {
                     headers.addAll(((HeaderParam) ann).value(), value);
                 }
@@ -71,7 +77,7 @@ public class RequestParameters {
                 final String name = ((CookieParam) ann).value();
                 Cookie c;
                 if (value instanceof Collection) {
-                    for (final Object v : ((Collection) value)) {
+                    for (final Object v : ((Collection<?>) value)) {
                         if (!(v instanceof Cookie)) {
                             c = new Cookie(name, v.toString());
                         } else {
@@ -98,21 +104,21 @@ public class RequestParameters {
                 }
             } else if ((ann = anns.get((MatrixParam.class))) != null) {
                 if (value instanceof Collection) {
-                    newTarget = newTarget.matrixParam(((MatrixParam) ann).value(), convert((Collection) value));
+                    newTarget = newTarget.matrixParam(((MatrixParam) ann).value(), convert((Collection<?>) value));
                 } else {
                     newTarget = newTarget.matrixParam(((MatrixParam) ann).value(), value);
                 }
             } else if ((ann = anns.get((FormParam.class))) != null) {
                 if (value instanceof Collection) {
-                    for (final Object v : ((Collection) value)) {
+                    for (final Object v : ((Collection<?>) value)) {
                         form.param(((FormParam) ann).value(), v.toString());
                     }
                 } else {
                     form.param(((FormParam) ann).value(), value.toString());
                 }
-            } else if ((ann = anns.get((BeanParam.class))) != null) {
+            } else if ((anns.get((BeanParam.class))) != null) {
                 if (value instanceof Collection) {
-                    for (final Object v : ((Collection) value)) {
+                    for (final Object v : ((Collection<?>) value)) {
                         addBeanParameter(v);
                     }
                 } else {
@@ -125,11 +131,11 @@ public class RequestParameters {
             throws IllegalAccessException, IntrospectionException, InvocationTargetException {
         Class<?> beanClass = beanParam.getClass();
         List<Field> fields = new ArrayList<>();
-        fields = getAllFields(fields, beanClass);
+        getAllFields(fields, beanClass);
 
         for (final Field field : fields) {
             Object value = null;
-            final Map<Class, Annotation> anns = new HashMap<>();
+            final Map<Class<?>, Annotation> anns = new HashMap<>();
 
             // get field annotations
             for (final Annotation ann : field.getAnnotations()) {
@@ -168,12 +174,12 @@ public class RequestParameters {
         return fields;
     }
 
-    private Object[] convert(final Collection value) {
+    private Object[] convert(final Collection<?> value) {
         return value.toArray();
     }
 
-    public static boolean hasAnyParamAnnotation(final Map<Class, Annotation> anns) {
-        for (final Class paramAnnotationClass : PARAM_ANNOTATION_CLASSES) {
+    public static boolean hasAnyParamAnnotation(final Map<Class<?>, Annotation> anns) {
+        for (final Class<?> paramAnnotationClass : PARAM_ANNOTATION_CLASSES) {
             if (anns.containsKey(paramAnnotationClass)) {
                 return true;
             }
@@ -181,19 +187,19 @@ public class RequestParameters {
         return false;
     }
 
-    public WebTarget getNewTarget() {
+    WebTarget getNewTarget() {
         return newTarget;
     }
 
-    public MultivaluedHashMap<String, Object> getHeaders() {
+    MultivaluedHashMap<String, Object> getHeaders() {
         return headers;
     }
 
-    public LinkedList<Cookie> getCookies() {
+    LinkedList<Cookie> getCookies() {
         return cookies;
     }
 
-    public Form getForm() {
+    Form getForm() {
         return form;
     }
 

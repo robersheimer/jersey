@@ -40,7 +40,6 @@ import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.MatrixParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.client.Entity;
@@ -75,7 +74,7 @@ public final class WebResourceFactory implements InvocationHandler {
 
     private static final MultivaluedMap<String, Object> EMPTY_HEADERS = new MultivaluedHashMap<>();
     private static final Form EMPTY_FORM = new Form();
-    private static final List<Class> PARAM_ANNOTATION_CLASSES = Arrays.<Class>asList(PathParam.class, QueryParam.class,
+    private static final List<Class<?>> PARAM_ANNOTATION_CLASSES = Arrays.asList(PathParam.class, QueryParam.class,
             HeaderParam.class, CookieParam.class, MatrixParam.class, FormParam.class, BeanParam.class);
 
     /**
@@ -92,7 +91,7 @@ public final class WebResourceFactory implements InvocationHandler {
      * be used for making requests to the server.
      */
     public static <C> C newResource(final Class<C> resourceInterface, final WebTarget target) {
-        return newResource(resourceInterface, target, false, EMPTY_HEADERS, Collections.<Cookie>emptyList(), EMPTY_FORM);
+        return newResource(resourceInterface, target, false, EMPTY_HEADERS, Collections.emptyList(), EMPTY_FORM);
     }
 
     /**
@@ -187,7 +186,7 @@ public final class WebResourceFactory implements InvocationHandler {
         Object entity = null;
         Type entityType = null;
         for (int i = 0; i < paramAnns.length; i++) {
-            final Map<Class, Annotation> anns = new HashMap<>();
+            final Map<Class<?>, Annotation> anns = new HashMap<>();
             for (final Annotation ann : paramAnns[i]) {
                 anns.put(ann.annotationType(), ann);
             }
@@ -263,7 +262,7 @@ public final class WebResourceFactory implements InvocationHandler {
             }
         }
 
-        final GenericType responseGenericType = new GenericType(method.getGenericReturnType());
+        final GenericType<?> responseGenericType = new GenericType(method.getGenericReturnType());
         if (entity != null) {
             if (entityType instanceof ParameterizedType) {
                 entity = new GenericEntity(entity, entityType);

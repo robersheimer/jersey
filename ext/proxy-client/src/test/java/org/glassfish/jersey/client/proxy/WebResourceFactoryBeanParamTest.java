@@ -119,5 +119,4 @@ public class WebResourceFactoryBeanParamTest  extends JerseyTest {
 
         assertEquals("query", response);
     }
-
 }

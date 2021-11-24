@@ -19,6 +19,7 @@ import org.junit.Test;
 import java.beans.IntrospectionException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,22 +37,47 @@ public class RequestParametersTest {
     private static final Form EMPTY_FORM = new Form();
     private static final String baseURL = "http://example.com";
 
+    @QueryParam("queryParam")
+    String queryParam;
+
+    @QueryParam("queryParams")
+    List<String> queryParams;
+
+    @PathParam("pathParam")
+    String pathParam;
+
+    @HeaderParam("headerParam")
+    String headerParam;
+
+    @MatrixParam("matrixParam")
+    List<String> matrixParam;
+
+    @CookieParam("cookieParam")
+    Cookie cookieParam;
+
+    @BeanParam
+    MySubBeanParam subBeanParam;
+
+    @FormParam("formParam")
+    String formParam;
+
+    @FormParam("formParams")
+    List<String> formParams;
+
+
     private WebTarget getExampleTarget() {
         Client client = ClientBuilder.newClient();
-        WebTarget webTarget = client.target(baseURL);
-        return webTarget;
+        return client.target(baseURL);
     }
 
     private WebTarget getExampleTargetWithPathParam() {
         Client client = ClientBuilder.newClient();
-        WebTarget webTarget = client.target(baseURL + "/{pathParam}");
-        return webTarget;
+        return client.target(baseURL + "/{pathParam}");
     }
 
     private RequestParameters getEmptyRequestParameters(WebTarget webTarget) {
-        RequestParameters requestParameters = new RequestParameters(webTarget,
-                EMPTY_HEADERS, Collections.<Cookie>emptyList(), EMPTY_FORM);
-        return requestParameters;
+        return new RequestParameters(webTarget,
+                EMPTY_HEADERS, Collections.emptyList(), EMPTY_FORM);
     }
 
     @Test
@@ -61,9 +87,8 @@ public class RequestParametersTest {
         WebTarget webTarget = getExampleTarget();
         RequestParameters requestParameters = getEmptyRequestParameters(webTarget);
 
-        MyGetBeanParam getBeanParam = new MyGetBeanParam();
-        Annotation ann = getBeanParam.getClass().getDeclaredField("queryParam").getAnnotations()[0];
-        Map<Class, Annotation> anns = new HashMap<>();
+        Annotation ann = this.getClass().getDeclaredField("queryParam").getAnnotations()[0];
+        Map<Class<?>, Annotation> anns = new HashMap<>();
         anns.put(QueryParam.class, ann);
 
         requestParameters.addParameter("testQuery", anns);
@@ -73,15 +98,33 @@ public class RequestParametersTest {
     }
 
     @Test
+    public void testAddListOfQueryParameters() throws IntrospectionException, InvocationTargetException,
+            IllegalAccessException, NoSuchFieldException {
+
+        WebTarget webTarget = getExampleTarget();
+        RequestParameters requestParameters = getEmptyRequestParameters(webTarget);
+
+        Annotation ann = this.getClass().getDeclaredField("queryParams").getAnnotations()[0];
+        Map<Class<?>, Annotation> anns = new HashMap<>();
+        anns.put(QueryParam.class, ann);
+        List<String> subQueryParam = Arrays.asList("subQuery1", "subQuery2");
+
+        requestParameters.addParameter(subQueryParam, anns);
+
+        String uri = requestParameters.getNewTarget().getUriBuilder().build().toString();
+
+        assertEquals(baseURL + "/?queryParams=subQuery1&queryParams=subQuery2", uri);
+    }
+
+    @Test
     public void testAddPathParameter() throws NoSuchFieldException, IntrospectionException,
             InvocationTargetException, IllegalAccessException {
 
         WebTarget webTarget = getExampleTargetWithPathParam();
         RequestParameters requestParameters = getEmptyRequestParameters(webTarget);
 
-        MyGetBeanParam getBeanParam = new MyGetBeanParam();
-        Annotation ann = getBeanParam.getClass().getDeclaredField("pathParam").getAnnotations()[0];
-        Map<Class, Annotation> anns = new HashMap<>();
+        Annotation ann = this.getClass().getDeclaredField("pathParam").getAnnotations()[0];
+        Map<Class<?>, Annotation> anns = new HashMap<>();
         anns.put(PathParam.class, ann);
 
         requestParameters.addParameter("testPath", anns);
@@ -97,9 +140,8 @@ public class RequestParametersTest {
         WebTarget webTarget = getExampleTarget();
         RequestParameters requestParameters = getEmptyRequestParameters(webTarget);
 
-        MyGetBeanParam getBeanParam = new MyGetBeanParam();
-        Annotation ann = getBeanParam.getClass().getDeclaredField("headerParam").getAnnotations()[0];
-        Map<Class, Annotation> anns = new HashMap<>();
+        Annotation ann = this.getClass().getDeclaredField("headerParam").getAnnotations()[0];
+        Map<Class<?>, Annotation> anns = new HashMap<>();
         anns.put(HeaderParam.class, ann);
 
         requestParameters.addParameter("testHeader", anns);
@@ -117,9 +159,8 @@ public class RequestParametersTest {
         WebTarget webTarget = getExampleTarget();
         RequestParameters requestParameters = getEmptyRequestParameters(webTarget);
 
-        MyGetBeanParam getBeanParam = new MyGetBeanParam();
-        Annotation ann = getBeanParam.getClass().getDeclaredField("matrixParam").getAnnotations()[0];
-        Map<Class, Annotation> anns = new HashMap<>();
+        Annotation ann = this.getClass().getDeclaredField("matrixParam").getAnnotations()[0];
+        Map<Class<?>, Annotation> anns = new HashMap<>();
         anns.put(MatrixParam.class, ann);
 
         requestParameters.addParameter("testMatrix", anns);
@@ -135,9 +176,8 @@ public class RequestParametersTest {
         WebTarget webTarget = getExampleTarget();
         RequestParameters requestParameters = getEmptyRequestParameters(webTarget);
 
-        MyGetBeanParam getBeanParam = new MyGetBeanParam();
-        Annotation ann = getBeanParam.getClass().getDeclaredField("cookieParam").getAnnotations()[0];
-        Map<Class, Annotation> anns = new HashMap<>();
+        Annotation ann = this.getClass().getDeclaredField("cookieParam").getAnnotations()[0];
+        Map<Class<?>, Annotation> anns = new HashMap<>();
         anns.put(CookieParam.class, ann);
 
         Cookie cookie = new Cookie("cookieParam", "testCookie");
@@ -154,9 +194,8 @@ public class RequestParametersTest {
         WebTarget webTarget = getExampleTarget();
         RequestParameters requestParameters = getEmptyRequestParameters(webTarget);
 
-        MyBeanParam beanParam = new MyBeanParam();
-        Annotation ann = beanParam.getClass().getDeclaredField("formParam1").getAnnotations()[0];
-        Map<Class, Annotation> anns = new HashMap<>();
+        Annotation ann = this.getClass().getDeclaredField("formParam").getAnnotations()[0];
+        Map<Class<?>, Annotation> anns = new HashMap<>();
         anns.put(FormParam.class, ann);
 
         requestParameters.addParameter("testForm", anns);
@@ -164,7 +203,33 @@ public class RequestParametersTest {
         LinkedList<String> formList = new LinkedList<>();
         formList.add("testForm");
 
-        assertEquals(formList, form.asMap().get("formParam1"));
+        assertEquals(formList, form.asMap().get("formParam"));
+    }
+
+    @Test
+    public void testListOfFormParameters() throws NoSuchFieldException, IntrospectionException, InvocationTargetException, IllegalAccessException {
+
+        WebTarget webTarget = getExampleTarget();
+        RequestParameters requestParameters = getEmptyRequestParameters(webTarget);
+
+        Annotation ann = this.getClass().getDeclaredField("formParams").getAnnotations()[0];
+        Map<Class<?>, Annotation> anns = new HashMap<>();
+        anns.put(FormParam.class, ann);
+
+        List<String> testFormList = Arrays.asList("formParam1", "formParam2");
+        requestParameters.addParameter(testFormList, anns);
+        Form form = requestParameters.getForm();
+
+        assertEquals(testFormList, form.asMap().get("formParams"));
+
+    }
+
+    // any nonempty annotation will do
+    private Map<Class<?>, Annotation> getNonEmptyBeanParamAnnotation() throws NoSuchFieldException {
+        Annotation ann = this.getClass().getDeclaredField("queryParam").getAnnotations()[0];
+        Map<Class<?>, Annotation> anns = new HashMap<>();
+        anns.put(BeanParam.class, ann);
+        return anns;
     }
 
     @Test
@@ -174,16 +239,37 @@ public class RequestParametersTest {
         WebTarget webTarget = getExampleTarget();
         RequestParameters requestParameters = getEmptyRequestParameters(webTarget);
 
-        MyGetBeanParam getBeanParam = new MyGetBeanParam();
-        Annotation ann = getBeanParam.getClass().getDeclaredField("queryParam").getAnnotations()[0];
-        Map<Class, Annotation> anns = new HashMap<>();
-        anns.put(BeanParam.class, ann);
+        MyBeanParam beanParam = new MyBeanParam();
+        beanParam.setQueryParam2("testQuery");
 
-        getBeanParam.setQueryParam("testQuery");
+        Map<Class<?>, Annotation> anns = getNonEmptyBeanParamAnnotation();
 
-        requestParameters.addParameter(getBeanParam, anns);
+        requestParameters.addParameter(beanParam, anns);
         String uri = requestParameters.getNewTarget().getUriBuilder().build().toString();
 
+        assertEquals(baseURL + "/?queryParam2=testQuery", uri);
+    }
+
+    @Test
+    public void testAddListOfBeanParameters() throws NoSuchFieldException, IntrospectionException, InvocationTargetException, IllegalAccessException {
+
+        WebTarget webTarget = getExampleTarget();
+        RequestParameters requestParameters = getEmptyRequestParameters(webTarget);
+
+        MyBeanParam beanParam1 = new MyBeanParam();
+        beanParam1.setQueryParam("testQuery");
+        MyBeanParam beanParam2 = new MyBeanParam();
+        beanParam2.setCookieParam(new Cookie("cookie", "cookieValue"));
+
+        Map<Class<?>, Annotation> anns = getNonEmptyBeanParamAnnotation();
+
+        List<MyBeanParam> beanParams = Arrays.asList(beanParam1, beanParam2);
+        requestParameters.addParameter(beanParams, anns);
+
+        String uri = requestParameters.getNewTarget().getUriBuilder().build().toString();
+        List<Cookie> cookies = requestParameters.getCookies();
+
         assertEquals(baseURL + "/?queryParam=testQuery", uri);
+        assertEquals(new Cookie("cookieParam", "cookieValue"), cookies.get(0));
     }
 }
