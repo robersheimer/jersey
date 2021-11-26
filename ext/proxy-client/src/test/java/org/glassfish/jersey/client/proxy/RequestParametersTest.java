@@ -180,11 +180,11 @@ public class RequestParametersTest {
         Map<Class<?>, Annotation> anns = new HashMap<>();
         anns.put(CookieParam.class, ann);
 
-        Cookie cookie = new Cookie("cookieParam", "testCookie");
+        Cookie cookie = new Cookie("cookieParamName", "testCookie");
         requestParameters.addParameter(cookie, anns);
         List<Cookie> cookies = requestParameters.getCookies();
 
-        assertEquals(cookie, cookies.get(0));
+        assertEquals(new Cookie("cookieParam", "testCookie"), cookies.get(0));
     }
 
     @Test

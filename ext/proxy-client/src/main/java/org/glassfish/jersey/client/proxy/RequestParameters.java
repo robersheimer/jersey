@@ -30,8 +30,7 @@ import java.util.Map;
 /**
  * Collector to retrieve parameters for setting up the HTTP request sent in the invoke method of WebResourceFactory
  * The addParameter method takes a single annotated method parameter or annotated field or property of a BeanParam
- * and adds the information to the web target, headers, cookie list or form. It calls addBeanParameter for every
- * BeanParam it encounters, which in turn calls addParameter as often as needed
+ * and adds the information to the web target, headers, cookie list or form.
  */
 class RequestParameters {
 
@@ -97,8 +96,6 @@ class RequestParameters {
                         if (!name.equals(((Cookie) value).getName())) {
                             // is this the right thing to do? or should I fail? or ignore the difference?
                             cookies.add(new Cookie(name, c.getValue(), c.getPath(), c.getDomain(), c.getVersion()));
-                        } else {
-                            cookies.add(c);
                         }
                     }
                 }
